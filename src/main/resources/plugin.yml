@@ -1,0 +1,5 @@
+name: EnvyGamesCore
+main: dev.anullihate.EnvyGamesCore
+version: ${pom.version}
+api: ["1.0.0"]
+author: anullihate

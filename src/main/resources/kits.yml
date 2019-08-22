@@ -1,0 +1,17 @@
+Start:
+  items:
+    - "id:damage:count:name:ench_id:ench_level"
+  helmet: ""
+  chestplate: ""
+  leggings: ""
+  boots: ""
+
+  commands: []
+
+  cooldown:
+    hours: 24
+    minutes: 30
+
+  effects: []
+
+  cost: 0
