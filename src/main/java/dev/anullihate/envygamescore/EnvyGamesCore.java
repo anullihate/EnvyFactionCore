@@ -4,6 +4,7 @@ import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.j256.ormlite.support.ConnectionSource;
 import dev.anullihate.envygamescore.commands.KitsCmd;
+import dev.anullihate.envygamescore.listeners.BlockEventListener;
 import dev.anullihate.envygamescore.listeners.PlayerEventListener;
 import dev.anullihate.envygamescore.objects.kits.Kit;
 import dev.anullihate.envygamescore.objects.kits.Kits;
@@ -54,6 +55,7 @@ public class EnvyGamesCore extends PluginBase {
 
     private void registerEventListeners() {
         this.getServer().getPluginManager().registerEvents(new PlayerEventListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new BlockEventListener(this), this);
     }
 
     private void runSchedulers() {

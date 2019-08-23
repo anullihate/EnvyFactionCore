@@ -38,6 +38,10 @@ public class KitsSelectionGui extends FormWindowSimple implements Gui {
         String kitName = selectedKitButton.getKitName();
 
         Kit kit = EnvyGamesCore.kits.getKit(kitName);
-        kit.requestHandler(event.getPlayer());
+        if (event.getPlayer().isOp()) {
+            kit.addTo(event.getPlayer());
+        } else {
+            kit.requestHandler(event.getPlayer());
+        }
     }
 }
