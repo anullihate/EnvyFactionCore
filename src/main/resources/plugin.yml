@@ -1,5 +1,9 @@
 name: EnvyGamesCore
-main: dev.anullihate.EnvyGamesCore
+main: dev.anullihate.envygamescore.EnvyGamesCore
 version: ${pom.version}
 api: ["1.0.0"]
 author: anullihate
+
+permissions:
+  envykits.command:
+    default: true

@@ -1,10 +1,11 @@
-package dev.anullihate.commands.kits;
+package dev.anullihate.envygamescore.commands;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.utils.TextFormat;
-import dev.anullihate.EnvyGamesCore;
+import dev.anullihate.envygamescore.EnvyGamesCore;
+import dev.anullihate.envygamescore.guis.kits.KitsSelectionGui;
 
 public class KitsCmd extends Command {
 
@@ -20,10 +21,12 @@ public class KitsCmd extends Command {
 
         if (!(sender instanceof Player)) {
             sender.sendMessage(TextFormat.RED + "Please use this command in-game.");
-            return true;
+            return false;
         }
 
-        Player player = this.core.getServer().getPlayer(sender.getName());
+        Player player = (Player) sender;
+
+        player.showFormWindow(new KitsSelectionGui(player));
 
         return true;
     }

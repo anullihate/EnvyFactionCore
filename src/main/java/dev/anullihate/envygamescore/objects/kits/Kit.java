@@ -1,4 +1,4 @@
-package dev.anullihate.objects;
+package dev.anullihate.envygamescore.objects.kits;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.ConsoleCommandSender;
@@ -9,70 +9,66 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.ServerException;
-import dev.anullihate.EnvyGamesCore;
+import dev.anullihate.envygamescore.EnvyGamesCore;
 
 import java.io.File;
-import java.util.*;
+import java.util.LinkedHashMap;
 
-public class Kits {
+public class Kit {
 
     private EnvyGamesCore core;
 
-    private Map<String, ConfigSection> kits = new HashMap<>();
-    private Map<String, Config> cooldowns = new HashMap<>();
+    private String kitName;
+    private ConfigSection kitSection;
 
-    public Kits(EnvyGamesCore core) {
+    private int cost = 0;
+    private int cooldown;
+
+    private Config cooldownsConfig;
+    private final ConfigSection playerCooldowns;
+
+    public Kit(EnvyGamesCore core, String kitName, ConfigSection kitSection) {
         this.core = core;
+        this.kitName = kitName;
+        this.kitSection = kitSection;
 
-        loadKits();
-    }
+        this.cooldown = this.getCooldownInMinutes();
 
-    private void loadKits() {
-        Config configKits = new Config(new File(this.core.getDataFolder(), "kits.yml"), Config.YAML);
-
-        configKits.getSections().forEach((kit, kitObject) -> {
-            this.kits.put(kit, configKits.getSection(kit));
-
-            cooldowns.put(kit, new Config(new File(this.core.getDataFolder(), "cooldowns/" + kit.toLowerCase() + ".yml"),
-                    Config.YAML,
-                    new ConfigSection(new LinkedHashMap<String, Object>() {
-                {
-                    put("players", new ConfigSection());
-                }
-            })));
-        });
-    }
-
-    private ConfigSection getKitSection(String kit) {
-        Map<String, ConfigSection> lowerKeyedKits = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        lowerKeyedKits.putAll(kits);
-
-        if (lowerKeyedKits.containsKey(kit.toLowerCase())) {
-            return lowerKeyedKits.get(kit.toLowerCase());
+        if (kitSection.containsKey("cost") && kitSection.getInt("cost") != 0) {
+            this.cost = kitSection.getInt("cost");
         }
 
-        return null;
+        cooldownsConfig = new Config(new File(this.core.getDataFolder(), "cooldowns/" + this.kitName.toLowerCase() + ".yml"),
+                Config.YAML,
+                new ConfigSection(new LinkedHashMap<String, Object>() {
+                    {
+                        put("players", new ConfigSection());
+                    }
+                }));
+        playerCooldowns = this.cooldownsConfig.getSection("players");
     }
 
-    public void sendKit(Player to, String kit) {
-        ConfigSection kitSection = getKitSection(kit);
-        int cooldownInMinutes = 0;
+    public boolean requestHandler(Player player) {
+        if (testPermission(player)) {
+            if (!this.playerCooldowns.exists(player.getName().toLowerCase())) {
+                if (this.cost > 0) {
 
-        PlayerInventory playerInventory = to.getInventory();
-
-        if (kitSection == null) return;
-
-        if (kitSection.containsKey("cooldown")) {
-            ConfigSection cooldown = kitSection.getSection("cooldown");
-            if (cooldown.containsKey("minutes")) {
-                cooldownInMinutes += cooldown.getInt("minutes");
-            }
-            if (cooldown.containsKey("hours")) {
-                cooldownInMinutes += cooldown.getInt("hours") * 60;
+                } else {
+                    this.addTo(player);
+                    player.sendMessage("got kit");
+                    return true;
+                }
+            } else {
+                player.sendMessage("still on cooldown");
             }
         } else {
-            cooldownInMinutes = 24 * 60;
+            player.sendMessage("You have no perms to get this kit!");
         }
+        return false;
+    }
+
+    public void addTo(Player player) {
+        PlayerInventory playerInventory = player.getInventory();
 
         for (String itemDataString : kitSection.getStringList("items")) {
             Item item = itemLoader(itemDataString);
@@ -106,7 +102,7 @@ public class Kits {
 
         if (kitSection.containsKey("effects") && !kitSection.getStringList("effects").isEmpty()) {
             for (String effectDataString: kitSection.getStringList("effects")) {
-                to.addEffect(effectLoader(effectDataString));
+                player.addEffect(effectLoader(effectDataString));
             }
         }
 
@@ -114,12 +110,13 @@ public class Kits {
             for (String commandsDataString: kitSection.getStringList("commands")) {
                 this.core.getServer().dispatchCommand(new ConsoleCommandSender(),
                         commandsDataString
-                                .replace("{player}", to.getName()));
+                                .replace("{player}", player.getName()));
             }
         }
 
-        // cooldowns
-        cooldowns.get(kit).getSection("player").set(to.getName().toLowerCase(), cooldownInMinutes);
+        if (this.cooldown > 0) {
+            this.playerCooldowns.set(player.getName().toLowerCase(), this.cooldown);
+        }
     }
 
     private Item itemLoader(String itemDataString) {
@@ -169,26 +166,39 @@ public class Kits {
         return null;
     }
 
-    public void cooldownProcessor() {
-        kits.forEach((kit, kitSection) -> {
-            ConfigSection playerCooldowns = cooldowns.get(kit).getSection("players");
+    private int getCooldownInMinutes() {
+        int min = 0;
+        if (kitSection.containsKey("cooldown")) {
+            ConfigSection cooldown = kitSection.getSection("cooldown");
+            if (cooldown.containsKey("minutes")) {
+                min += cooldown.getInt("minutes");
+            }
+            if (cooldown.containsKey("hours")) {
+                min += cooldown.getInt("hours") * 60;
+            }
+        } else {
+            min = 24 * 60;
+        }
 
-            playerCooldowns.getSections().forEach((player, remainingTime) -> {
-                int playerCooldown = playerCooldowns.getInt(player);
+        return min;
+    }
 
-                playerCooldowns.set(player, playerCooldown);
+    public void processCooldown() {
+        this.playerCooldowns.getSections().forEach((player, time) -> {
+            int remainingMinute = (int)time - 1;
 
-                if (playerCooldown <= 0) {
-                    playerCooldowns.remove(player);
-                }
-            });
+            this.playerCooldowns.set(player, remainingMinute);
+            if (remainingMinute <= 0) {
+                this.playerCooldowns.remove(player);
+            }
         });
+    }
+
+    public boolean testPermission(Player player) {
+        return player.hasPermission("envykits." + this.kitName.toLowerCase());
     }
 
     public void save() {
-        kits.forEach((kit, kitSection) -> {
-            cooldowns.get(kit).save();
-        });
+        this.cooldownsConfig.save();
     }
-
 }

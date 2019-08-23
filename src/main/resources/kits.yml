@@ -1,6 +1,6 @@
 Start:
   items:
-    - "id:damage:count:name:ench_id:ench_level"
+    - "1:0:15:default"
   helmet: ""
   chestplate: ""
   leggings: ""

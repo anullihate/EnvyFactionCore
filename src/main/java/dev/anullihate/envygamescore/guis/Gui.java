@@ -1,4 +1,4 @@
-package dev.anullihate.guis;
+package dev.anullihate.envygamescore.guis;
 
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
 

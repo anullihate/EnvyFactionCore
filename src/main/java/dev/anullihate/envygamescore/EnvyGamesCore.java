@@ -1,21 +1,21 @@
-package dev.anullihate;
+package dev.anullihate.envygamescore;
 
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
-import dev.anullihate.commands.kits.KitsCmd;
-import dev.anullihate.listeners.PlayerEventListener;
-import dev.anullihate.objects.Kits;
-import dev.anullihate.tasks.KitsCooldownTask;
+import dev.anullihate.envygamescore.commands.KitsCmd;
+import dev.anullihate.envygamescore.listeners.PlayerEventListener;
+import dev.anullihate.envygamescore.objects.kits.Kit;
+import dev.anullihate.envygamescore.objects.kits.Kits;
+import dev.anullihate.envygamescore.tasks.ClearLagTask;
+import dev.anullihate.envygamescore.tasks.KitsCooldownTask;
 import ru.nukkit.dblib.DbLib;
 
 public class EnvyGamesCore extends PluginBase {
 
     public ConnectionSource connectionSource;
 
-    public Kits kits;
+    public static Kits kits;
 
     public boolean connectToDbLib() {
         if (this.getServer().getPluginManager().getPlugin("DbLib") == null) {
@@ -29,23 +29,35 @@ public class EnvyGamesCore extends PluginBase {
         return true;
     }
 
+    @Override
     public void onEnable() {
         //
         connectToDbLib();
 
         kits = new Kits(this);
 
-        registerCommands();
-        registerListeners();
+        this.registerCommands();
+        this.registerEventListeners();
+        this.runSchedulers();
+    }
 
-        getServer().getScheduler().scheduleRepeatingTask(new KitsCooldownTask(this), 1200);
+    @Override
+    public void onDisable() {
+        for (Kit kit : kits.getKits().values()) {
+            kit.save();
+        }
     }
 
     private void registerCommands() {
         this.getServer().getCommandMap().register("envygamescore", new KitsCmd(this));
     }
 
-    private void registerListeners() {
+    private void registerEventListeners() {
         this.getServer().getPluginManager().registerEvents(new PlayerEventListener(this), this);
+    }
+
+    private void runSchedulers() {
+        this.getServer().getScheduler().scheduleRepeatingTask(new KitsCooldownTask(this), 1200);
+        this.getServer().getScheduler().scheduleRepeatingTask(new ClearLagTask(this), 20 * 1200);
     }
 }
