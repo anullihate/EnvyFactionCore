@@ -76,9 +76,9 @@ public class Kit {
         }
 
         String helmetStringData = kitSection.getString("helmet");
-        String chestplateStringData = kitSection.getString("helmet");
-        String leggingsStringData = kitSection.getString("helmet");
-        String bootsStringData = kitSection.getString("helmet");
+        String chestplateStringData = kitSection.getString("chestplate");
+        String leggingsStringData = kitSection.getString("leggings");
+        String bootsStringData = kitSection.getString("boots");
 
         if (kitSection.containsKey("helmet") && !helmetStringData.isEmpty()) {
             Item helmet = itemLoader(helmetStringData);
