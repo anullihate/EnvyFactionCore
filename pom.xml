@@ -60,6 +60,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.massivecraft.factions</groupId>
+            <artifactId>Factions</artifactId>
+            <version>0</version>
+            <optional>false</optional>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/Factions.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.creeperface.nukkit</groupId>
             <artifactId>PlaceholderAPI</artifactId>
             <version>1.0-SNAPSHOT</version>

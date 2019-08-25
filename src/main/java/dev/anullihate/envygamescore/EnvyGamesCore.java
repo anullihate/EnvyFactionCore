@@ -10,6 +10,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.massivecraft.factions.P;
 import dev.anullihate.envygamescore.apis.GeneralAPI;
 import dev.anullihate.envygamescore.commands.KitsCmd;
 import dev.anullihate.envygamescore.datatables.Account;
@@ -35,6 +36,7 @@ public class EnvyGamesCore extends PluginBase {
     // apis
     public static GeneralAPI generalAPI;
     public static PlaceholderAPI placeholderAPI;
+    public static P p;
 
     // config
     public static Config pluginConfig;
@@ -103,5 +105,6 @@ public class EnvyGamesCore extends PluginBase {
     private void loadAPIS() {
         generalAPI = new GeneralAPI(this);
         placeholderAPI = PlaceholderAPI.getInstance();
+        p = P.p;
     }
 }

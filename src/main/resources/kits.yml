@@ -1,17 +1,27 @@
-Start:
-  items:
-    - "1:0:15:default"
-  helmet: ""
-  chestplate: ""
-  leggings: ""
-  boots: ""
+starter:
+  display-name: "&aStarter Kit"
 
-  commands: []
+  items:
+    - "apple:0:10"
+    - "wood:0:64"
+    - "splash_potion:21:3"
+    - "splash_potion:28:5"
+    - "splash_potion:12:2"
+    - "stone_sword:0:1:&aStarter Sword:sharpness:2"
+    - "stone_pickaxe:0:1:&aStarter Pickaxe:efficiency:1"
+  helmet: "chain_helmet:0:1:&aStarter Helmet:protection:2"
+  chestplate: "chain_chestplate:0:1:&aStarter Helmet:protection:2"
+  leggings: "chain_leggings:0:1:&aStarter Helmet:protection:2"
+  boots: "chain_boots:0:1:&aStarter Helmet:protection:2"
+
+  commands:
+    - "broadcast &e{player}&r has claimed {kit}"
 
   cooldown:
-    hours: 24
-    minutes: 30
+    hours: 3
+    minutes: 0
 
-  effects: []
+  effects:
+    - "speed:120:2"
 
   cost: 0

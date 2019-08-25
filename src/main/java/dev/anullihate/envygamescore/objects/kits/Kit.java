@@ -2,6 +2,7 @@ package dev.anullihate.envygamescore.objects.kits;
 
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
@@ -17,7 +18,9 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.ServerException;
+import cn.nukkit.utils.TextFormat;
 import dev.anullihate.envygamescore.EnvyGamesCore;
+import dev.anullihate.envygamescore.utils.EnchantmentUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +33,7 @@ public class Kit {
     private EnvyGamesCore core;
 
     private String kitName;
+    private String kitDisplayName;
     private ConfigSection kitSection;
 
     private int cost = 0;
@@ -41,6 +45,7 @@ public class Kit {
     public Kit(EnvyGamesCore core, String kitName, ConfigSection kitSection) {
         this.core = core;
         this.kitName = kitName;
+        this.kitDisplayName = TextFormat.colorize(kitSection.getString("display-name"));
         this.kitSection = kitSection;
 
         this.cooldown = this.getCooldownInMinutes();
@@ -81,9 +86,11 @@ public class Kit {
     public void addTo(Player player) {
         PlayerInventory playerInventory = player.getInventory();
 
+        ArrayList<Item> kitItems = new ArrayList<>();
+
         for (String itemDataString : kitSection.getStringList("items")) {
             Item item = itemLoader(itemDataString);
-            playerInventory.setItem(playerInventory.firstEmpty(item),   item);
+            kitItems.add(item);
         }
 
         String helmetStringData = kitSection.getString("helmet");
@@ -93,37 +100,40 @@ public class Kit {
 
         if (kitSection.containsKey("helmet") && !helmetStringData.isEmpty()) {
             Item helmet = itemLoader(helmetStringData);
-            playerInventory.setHelmet(helmet);
+            kitItems.add(helmet);
         }
 
         if (kitSection.containsKey("chestplate") && !kitSection.getString("chestplate").isEmpty()) {
             Item chestplate = itemLoader(chestplateStringData);
-            playerInventory.setChestplate(chestplate);
+            kitItems.add(chestplate);
         }
 
         if (kitSection.containsKey("leggings") && !kitSection.getString("leggings").isEmpty()) {
             Item leggings = itemLoader(leggingsStringData);
-
-            CompoundTag tag = new CompoundTag()
-                    .putString("CustomName", "CustomChest");
-
-            ListTag<CompoundTag> items = new ListTag<>("Items");
-            CompoundTag d = NBTIO.putItemHelper(leggings);
-            items.add(d);
-            tag.putList(items);
-
-            Item chest = Item.fromString("chest");
-            chest.setCustomBlockData(tag);
-
-            playerInventory.addItem(chest);
-
-            playerInventory.setLeggings(leggings);
+            kitItems.add(leggings);
         }
 
         if (kitSection.containsKey("boots") && !kitSection.getString("boots").isEmpty()) {
             Item boots = itemLoader(bootsStringData);
-            playerInventory.setBoots(boots);
+            kitItems.add(boots);
         }
+
+        CompoundTag tag = new CompoundTag();
+
+        ListTag<CompoundTag> items = new ListTag<>("Items");
+        int index = 0;
+        for (Item item : kitItems) {
+            CompoundTag d = NBTIO.putItemHelper(item, index++);
+            items.add(d);
+        }
+
+        tag.putList(items);
+
+        Item chest = Item.fromString("chest");
+        chest.setCustomName(kitDisplayName);
+        chest.setCustomBlockData(tag);
+
+        playerInventory.setItem(playerInventory.firstEmpty(chest), chest);
 
         if (kitSection.containsKey("effects") && !kitSection.getStringList("effects").isEmpty()) {
             for (String effectDataString: kitSection.getStringList("effects")) {
@@ -132,10 +142,12 @@ public class Kit {
         }
 
         if (kitSection.containsKey("commands") && !kitSection.getStringList("commands").isEmpty()) {
-            for (String commandsDataString: kitSection.getStringList("commands")) {
+            for (String commandsDataString : kitSection.getStringList("commands")) {
                 this.core.getServer().dispatchCommand(new ConsoleCommandSender(),
-                        commandsDataString
-                                .replace("{player}", player.getName()));
+                        TextFormat.colorize(commandsDataString
+                                .replace("{player}", player.getName())
+                                .replace("{kit}", kitDisplayName)
+                        ));
             }
         }
 
@@ -153,11 +165,11 @@ public class Kit {
         item.setCount(Integer.parseInt(itemDataStringArray[2]));
 
         if (itemDataStringArray.length > 3 && !itemDataStringArray[3].equals("default")) {
-            item.setCustomName(itemDataStringArray[3]);
+            item.setCustomName(TextFormat.colorize(itemDataStringArray[3]));
         }
 
         for (int i = 4; i <= itemDataStringArray.length - 2; i += 2) {
-            Enchantment enchantment = Enchantment.getEnchantment(Integer.parseInt(itemDataStringArray[i]));
+            Enchantment enchantment = Enchantment.getEnchantment(EnchantmentUtils.getIdByName(itemDataStringArray[i]));
             enchantment.setLevel(Integer.parseInt(itemDataStringArray[i + 1]));
             item.addEnchantment(enchantment);
         }
