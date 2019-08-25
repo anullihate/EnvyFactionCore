@@ -19,7 +19,7 @@ public class ClearLagTask extends PluginTask<EnvyGamesCore> {
     @Override
     public void onRun(int i) {
         Server server = this.getOwner().getServer();
-        String prefix = "&9[&eEnvyGames&9]";
+        String prefix = "&l&0&c(!)&r";
         if (server.getOnlinePlayers().size() > 0) {
             server.getScheduler().scheduleDelayedTask(this.owner, () -> {
                 String msg = String.format("%s &o&cLag Will Clear In...", prefix);

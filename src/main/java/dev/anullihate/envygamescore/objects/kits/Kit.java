@@ -1,10 +1,18 @@
 package dev.anullihate.envygamescore.objects.kits;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.command.ConsoleCommandSender;
+import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.ByteArrayTag;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
@@ -12,6 +20,9 @@ import cn.nukkit.utils.ServerException;
 import dev.anullihate.envygamescore.EnvyGamesCore;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class Kit {
@@ -72,7 +83,7 @@ public class Kit {
 
         for (String itemDataString : kitSection.getStringList("items")) {
             Item item = itemLoader(itemDataString);
-            playerInventory.addItem(item);
+            playerInventory.setItem(playerInventory.firstEmpty(item),   item);
         }
 
         String helmetStringData = kitSection.getString("helmet");
@@ -87,12 +98,26 @@ public class Kit {
 
         if (kitSection.containsKey("chestplate") && !kitSection.getString("chestplate").isEmpty()) {
             Item chestplate = itemLoader(chestplateStringData);
-            playerInventory.setBoots(chestplate);
+            playerInventory.setChestplate(chestplate);
         }
 
         if (kitSection.containsKey("leggings") && !kitSection.getString("leggings").isEmpty()) {
             Item leggings = itemLoader(leggingsStringData);
-            playerInventory.setHelmet(leggings);
+
+            CompoundTag tag = new CompoundTag()
+                    .putString("CustomName", "CustomChest");
+
+            ListTag<CompoundTag> items = new ListTag<>("Items");
+            CompoundTag d = NBTIO.putItemHelper(leggings);
+            items.add(d);
+            tag.putList(items);
+
+            Item chest = Item.fromString("chest");
+            chest.setCustomBlockData(tag);
+
+            playerInventory.addItem(chest);
+
+            playerInventory.setLeggings(leggings);
         }
 
         if (kitSection.containsKey("boots") && !kitSection.getString("boots").isEmpty()) {
@@ -124,25 +149,20 @@ public class Kit {
 
         String itemData = String.format("%s:%s", itemDataStringArray[0], itemDataStringArray[1]);
 
-        try {
-            Item item = Item.fromString(itemData);
-            item.setCount(Integer.parseInt(itemDataStringArray[2]));
+        Item item = Item.fromString(itemData);
+        item.setCount(Integer.parseInt(itemDataStringArray[2]));
 
-            if (itemDataStringArray.length > 3 && !itemDataStringArray[3].equals("default")) {
-                item.setCustomName(itemDataStringArray[3]);
-            }
-
-            for (int i = 4; i <= itemDataStringArray.length - 2; i += 2) {
-                Enchantment enchantment = Enchantment.getEnchantment(Integer.parseInt(itemDataStringArray[i]));
-                enchantment.setLevel(Integer.parseInt(itemDataStringArray[i + 1]));
-                item.addEnchantment(enchantment);
-            }
-
-            return item;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        if (itemDataStringArray.length > 3 && !itemDataStringArray[3].equals("default")) {
+            item.setCustomName(itemDataStringArray[3]);
         }
+
+        for (int i = 4; i <= itemDataStringArray.length - 2; i += 2) {
+            Enchantment enchantment = Enchantment.getEnchantment(Integer.parseInt(itemDataStringArray[i]));
+            enchantment.setLevel(Integer.parseInt(itemDataStringArray[i + 1]));
+            item.addEnchantment(enchantment);
+        }
+
+        return item;
     }
 
     private Effect effectLoader(String effectDataString) {
