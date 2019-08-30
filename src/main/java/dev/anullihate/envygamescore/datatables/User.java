@@ -1,10 +1,14 @@
 package dev.anullihate.envygamescore.datatables;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.List;
+import java.util.Map;
+
 @DatabaseTable(tableName = "accounts")
-public class Account {
+public class User {
 
     @DatabaseField(id = true)
     private String name;
@@ -15,11 +19,17 @@ public class Account {
     @DatabaseField
     private int experienceNeededTLU;
 
-    public Account() {
+    @DatabaseField
+    private String division;
+
+    @DatabaseField(dataType = DataType.SERIALIZABLE)
+    private String[] professions;
+
+    public User() {
 
     }
 
-    public Account(String name) {
+    public User(String name) {
         this.name = name;
     }
 
@@ -28,6 +38,14 @@ public class Account {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public int getExperience() {
@@ -61,5 +79,13 @@ public class Account {
     public void processLevelUp() {
         this.levelUp();
         this.experienceNeededTLU = (int)Math.round(this.experienceNeededTLU * 1.5);
+    }
+
+    public String getDivision() {
+        return division;
+    }
+
+    public void setDivision(String division) {
+        this.division = division;
     }
 }

@@ -6,6 +6,8 @@ import de.theamychan.scoreboard.network.DisplaySlot;
 import de.theamychan.scoreboard.network.Scoreboard;
 import de.theamychan.scoreboard.network.ScoreboardDisplay;
 import dev.anullihate.envygamescore.EnvyGamesCore;
+import dev.anullihate.envygamescore.datamanagers.UserManager;
+import dev.anullihate.envygamescore.datatables.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,34 +18,26 @@ public class GeneralAPI {
     private EnvyGamesCore core;
 
     public Map<Player, Scoreboard> scoreboardMap = new HashMap<>();
-    private int seq = 0;
     private int line = 0;
 
     public GeneralAPI(EnvyGamesCore core) {
         this.core = core;
     }
 
-    public void processPlayerScoreboard(Player player) {
+    public Scoreboard processPlayerScoreboard(Player player, String titleSequence) {
         Scoreboard scoreboard = ScoreboardAPI.createScoreboard();
-        List<String> titles = this.core.getConfig().getStringList("scoreboard.titles");
 
-        while (true) {
-            if (this.seq < titles.size()) {
-                ScoreboardDisplay scoreboardDisplay = scoreboard.addDisplay(DisplaySlot.SIDEBAR, "dummy", titles.get(this.seq));
-                this.core.getConfig().getStringList("scoreboard.lines").forEach(text -> {
-                    scoreboardDisplay.addLine(EnvyGamesCore.placeholderAPI.translateString(text, player), this.line++);
-                });
-                this.seq++;
-                break;
-            } else {
-                this.seq = 0;
-            }
+
+        ScoreboardDisplay scoreboardDisplay = scoreboard.addDisplay(DisplaySlot.SIDEBAR, "dummy", titleSequence);
+
+        for (String text : this.core.getConfig().getStringList("scoreboard.lines")) {
+            String txt = text
+                    .replace("{division}", getDivision(player));
+            scoreboardDisplay.addLine(EnvyGamesCore.placeholderAPI.translateString(txt, player), this.line++);
         }
 
-        scoreboard.showFor(player);
-        scoreboardMap.put(player, scoreboard);
-
         this.line = 0;
+        return scoreboard;
     }
 
     public String getOS(Player p) {
@@ -90,5 +84,18 @@ public class GeneralAPI {
         } else {
             return String.format("&a%s", factionTag);
         }
+    }
+
+    public String getDivision(Player player) {
+        try {
+            User user = UserManager.users.get(player.getName());
+            String division = user.getDivision();
+            if (division != null) {
+                return division;
+            }
+        } catch (Exception ex) {
+            return "None";
+        }
+        return "None";
     }
 }

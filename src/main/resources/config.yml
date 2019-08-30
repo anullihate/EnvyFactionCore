@@ -1,5 +1,5 @@
 player-tag:
-  score-tag: "%player_health%&c❤ &7- &3%device_os%"
+  score-tag: "&e{division}&f | %player_health%&c❤ &7- &3%device_os%"
   name-tag: "&6&l%factions_faction% &r&e%player%"
 
 chat:
@@ -31,6 +31,7 @@ scoreboard:
     - "§c╿ §aFaction§c: §3%factions_faction%"
     - "§c╿ §aLevel§c: §31"
     - "§c╿ §aExp§c: §30/100"
-    - "§c╿ §aProfession§c: §3None"
-    - "§c╿ §aBalance§c: §31000"
+    - "§c╿ §aDivision§c: §3{division}"
+    - "§c╿ §aProfession§c: §3unlock at lvl20"
+    - "§c╿ §aBalance§c: §3%economy_money%"
     - "§c┕╾╾╾╾╾╾╾╾╾╾╾╾╾╾╾╾╾╾"

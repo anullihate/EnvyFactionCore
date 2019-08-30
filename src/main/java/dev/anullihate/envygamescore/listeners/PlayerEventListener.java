@@ -4,16 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
-import cn.nukkit.event.player.PlayerChatEvent;
-import cn.nukkit.event.player.PlayerFormRespondedEvent;
-import cn.nukkit.event.player.PlayerInvalidMoveEvent;
-import cn.nukkit.event.player.PlayerJoinEvent;
-import cn.nukkit.level.Sound;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.PlaySoundPacket;
+import cn.nukkit.event.player.*;
 import cn.nukkit.utils.TextFormat;
 import dev.anullihate.envygamescore.EnvyGamesCore;
-import dev.anullihate.envygamescore.datatables.Account;
+import dev.anullihate.envygamescore.datamanagers.UserManager;
+import dev.anullihate.envygamescore.datatables.User;
 import dev.anullihate.envygamescore.guis.Gui;
 
 import java.sql.SQLException;
@@ -58,24 +53,42 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerFormResponse(PlayerFormRespondedEvent event) {
-        if (event.getResponse() == null) return;
         if (!(event.getWindow() instanceof Gui)) return;
 
         ((Gui) event.getWindow()).onPlayerFormResponse(event);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         try {
-            Account account = EnvyGamesCore.accountDao.queryForId(player.getName());
+            User account = EnvyGamesCore.accountDao.queryForId(player.getName());
             System.out.println(account);
 
             if (account == null) {
-                // create account
+                // create player
+                User newUser = new User();
+
+                // initial data
+                newUser.setName(player.getName());
+                newUser.setLevel(1);
+
+                EnvyGamesCore.accountDao.create(newUser);
+
+                account = EnvyGamesCore.accountDao.queryForId(player.getName());
+                UserManager.users.put(player.getName(), account);
+            } else {
+                // load player
+                UserManager.users.put(player.getName(), account);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        UserManager.users.remove(player.getName());
     }
 }

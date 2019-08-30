@@ -38,18 +38,25 @@ public class BlockEventListener implements Listener {
         if (event.isCancelled()) return;
         Player player = event.getPlayer();
         PlayerInventory playerInventory = player.getInventory();
+        Item toolUsed = event.getItem();
 
         Item[] itemsToAdd = event.getDrops();
         List<Item> notAdded = new ArrayList<>();
 
-        for (int i = 0; i < itemsToAdd.length; i++) {
-            if (playerInventory.canAddItem(itemsToAdd[i])) {
-                playerInventory.addItem(itemsToAdd[i]);
-            } else {
-                notAdded.add(itemsToAdd[i]);
+        if (
+                toolUsed.isPickaxe() |
+                toolUsed.isAxe() |
+                toolUsed.isShovel()
+        ) {
+            for (int i = 0; i < itemsToAdd.length; i++) {
+                if (playerInventory.canAddItem(itemsToAdd[i])) {
+                    playerInventory.addItem(itemsToAdd[i]);
+                } else {
+                    notAdded.add(itemsToAdd[i]);
+                }
             }
+            event.setDrops(notAdded.toArray(new Item[0]));
         }
-        event.setDrops(notAdded.toArray(new Item[0]));
     }
 
     @EventHandler

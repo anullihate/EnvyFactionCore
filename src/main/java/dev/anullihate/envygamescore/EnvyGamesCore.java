@@ -1,7 +1,5 @@
 package dev.anullihate.envygamescore;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
@@ -13,8 +11,9 @@ import com.j256.ormlite.table.TableUtils;
 import com.massivecraft.factions.P;
 import dev.anullihate.envygamescore.apis.GeneralAPI;
 import dev.anullihate.envygamescore.commands.KitsCmd;
-import dev.anullihate.envygamescore.datatables.Account;
+import dev.anullihate.envygamescore.datatables.User;
 import dev.anullihate.envygamescore.listeners.BlockEventListener;
+import dev.anullihate.envygamescore.listeners.DataPacketEventListener;
 import dev.anullihate.envygamescore.listeners.PlayerEventListener;
 import dev.anullihate.envygamescore.objects.kits.Kit;
 import dev.anullihate.envygamescore.objects.kits.Kits;
@@ -28,8 +27,10 @@ import java.sql.SQLException;
 
 public class EnvyGamesCore extends PluginBase {
 
+    private static EnvyGamesCore core;
+
     public ConnectionSource connectionSource;
-    public static Dao<Account, String> accountDao;
+    public static Dao<User, String> accountDao;
 
     public static Kits kits;
 
@@ -41,7 +42,7 @@ public class EnvyGamesCore extends PluginBase {
     // config
     public static Config pluginConfig;
 
-    public boolean connectToDbLib() {
+    private boolean connectToDbLib() {
         if (this.getServer().getPluginManager().getPlugin("DbLib") == null) {
             this.getLogger().info(TextFormat.RED + "DbLib plugin not found");
             return false;
@@ -51,8 +52,8 @@ public class EnvyGamesCore extends PluginBase {
         if (connectionSource == null) return false;
 
         try {
-            accountDao = DaoManager.createDao(connectionSource, Account.class);
-            TableUtils.createTableIfNotExists(connectionSource, Account.class);
+            accountDao = DaoManager.createDao(connectionSource, User.class);
+            TableUtils.createTableIfNotExists(connectionSource, User.class);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -60,11 +61,16 @@ public class EnvyGamesCore extends PluginBase {
         return true;
     }
 
+    public static EnvyGamesCore getInstance() {
+        return core;
+    }
+
     @Override
     public void onEnable() {
+        core = this;
         saveDefaultConfig();
-        pluginConfig = getConfig();
-        connectToDbLib();
+
+        this.connectToDbLib();
 
         this.loadAPIS();
 
@@ -94,6 +100,7 @@ public class EnvyGamesCore extends PluginBase {
     private void registerEventListeners() {
         this.getServer().getPluginManager().registerEvents(new PlayerEventListener(this), this);
         this.getServer().getPluginManager().registerEvents(new BlockEventListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new DataPacketEventListener(this), this);
     }
 
     private void runSchedulers() {
