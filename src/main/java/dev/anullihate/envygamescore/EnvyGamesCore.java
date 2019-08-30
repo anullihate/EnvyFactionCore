@@ -91,6 +91,12 @@ public class EnvyGamesCore extends PluginBase {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        try {
+            connectionSource.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void registerCommands() {

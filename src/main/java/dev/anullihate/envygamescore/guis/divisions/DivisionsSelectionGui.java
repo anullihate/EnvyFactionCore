@@ -9,6 +9,7 @@ import dev.anullihate.envygamescore.EnvyGamesCore;
 import dev.anullihate.envygamescore.datamanagers.UserManager;
 import dev.anullihate.envygamescore.datatables.User;
 import dev.anullihate.envygamescore.guis.Gui;
+import dev.anullihate.envygamescore.guis.server.IntroductionGui;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -58,6 +59,7 @@ public class DivisionsSelectionGui extends FormWindowSimple implements Gui {
                         EnvyGamesCore.accountDao.update(user);
                         break;
                 }
+                player.showFormWindow(new IntroductionGui());
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }

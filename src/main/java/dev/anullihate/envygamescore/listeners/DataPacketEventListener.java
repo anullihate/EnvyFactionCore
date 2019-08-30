@@ -10,6 +10,7 @@ import dev.anullihate.envygamescore.EnvyGamesCore;
 import dev.anullihate.envygamescore.datamanagers.UserManager;
 import dev.anullihate.envygamescore.datatables.User;
 import dev.anullihate.envygamescore.guis.divisions.DivisionsIntroGui;
+import dev.anullihate.envygamescore.guis.server.IntroductionGui;
 
 public class DataPacketEventListener implements Listener {
 
@@ -29,6 +30,8 @@ public class DataPacketEventListener implements Listener {
                     User user = UserManager.users.get(player.getName());
                     if (user.getDivision() == null) {
                         player.showFormWindow(new DivisionsIntroGui());
+                    } else {
+                        player.showFormWindow(new IntroductionGui());
                     }
                 }
             }).runTaskLater(this.core, 40);
