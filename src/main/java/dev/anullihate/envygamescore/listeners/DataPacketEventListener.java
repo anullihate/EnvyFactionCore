@@ -8,8 +8,10 @@ import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
 import cn.nukkit.scheduler.NukkitRunnable;
 import dev.anullihate.envygamescore.EnvyGamesCore;
 import dev.anullihate.envygamescore.datamanagers.UserManager;
-import dev.anullihate.envygamescore.datatables.User;
+import dev.anullihate.envygamescore.dataobjects.users.UserProfile;
+import dev.anullihate.envygamescore.datatables.UserTable;
 import dev.anullihate.envygamescore.guis.divisions.DivisionsIntroGui;
+import dev.anullihate.envygamescore.guis.races.RaceIntroGui;
 import dev.anullihate.envygamescore.guis.server.IntroductionGui;
 
 public class DataPacketEventListener implements Listener {
@@ -27,10 +29,8 @@ public class DataPacketEventListener implements Listener {
             (new NukkitRunnable() {
                 @Override
                 public void run() {
-                    User user = UserManager.users.get(player.getName());
-                    if (user.getDivision() == null) {
-                        player.showFormWindow(new DivisionsIntroGui());
-                    } else {
+                    UserProfile user = UserManager.users.get(player.getName());
+                    if (user.getRace() == null && user.getDivision() == null) {
                         player.showFormWindow(new IntroductionGui());
                     }
                 }

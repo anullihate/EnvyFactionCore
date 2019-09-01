@@ -7,11 +7,10 @@ import cn.nukkit.form.element.ElementButtonImageData;
 import cn.nukkit.form.window.FormWindowSimple;
 import dev.anullihate.envygamescore.EnvyGamesCore;
 import dev.anullihate.envygamescore.datamanagers.UserManager;
-import dev.anullihate.envygamescore.datatables.User;
+import dev.anullihate.envygamescore.datatables.UserTable;
 import dev.anullihate.envygamescore.guis.Gui;
 import dev.anullihate.envygamescore.guis.server.IntroductionGui;
 
-import java.io.File;
 import java.sql.SQLException;
 
 public class DivisionsSelectionGui extends FormWindowSimple implements Gui {
@@ -21,11 +20,11 @@ public class DivisionsSelectionGui extends FormWindowSimple implements Gui {
         String type = ElementButtonImageData.IMAGE_DATA_TYPE_URL;
         String knightimg = "https://icon-library.net/images/warrior-icon/warrior-icon-25.jpg";
 
-        addButton(new ElementButton("Knight Division", new ElementButtonImageData(type, knightimg)));
-        addButton(new ElementButton("Archer Division", new ElementButtonImageData(type, knightimg)));
-        addButton(new ElementButton("Magic Division", new ElementButtonImageData(type, knightimg)));
-        addButton(new ElementButton("Rogue Division", new ElementButtonImageData(type, knightimg)));
-        addButton(new ElementButton("Cleric Division", new ElementButtonImageData(type, knightimg)));
+        addButton(new ElementButton("Warrior Division"));
+        addButton(new ElementButton("Ranger Division"));
+        addButton(new ElementButton("Magic Division"));
+        addButton(new ElementButton("Rogue Division"));
+        addButton(new ElementButton("Cleric Division"));
     }
 
     @Override
@@ -35,33 +34,18 @@ public class DivisionsSelectionGui extends FormWindowSimple implements Gui {
             player.showFormWindow(new DivisionsSelectionGui());
         } else {
             int id = getResponse().getClickedButtonId();
-            User user = UserManager.users.get(player.getName());
-            try {
-                switch (id) {
-                    case 0: // Knight
-                        user.setDivision("Knight");
-                        EnvyGamesCore.accountDao.update(user);
-                        break;
-                    case 1: // Archer
-                        user.setDivision("Archer");
-                        EnvyGamesCore.accountDao.update(user);
-                        break;
-                    case 2: // Magic
-                        user.setDivision("Magic");
-                        EnvyGamesCore.accountDao.update(user);
-                        break;
-                    case 3: // Rogue
-                        user.setDivision("Rogue");
-                        EnvyGamesCore.accountDao.update(user);
-                        break;
-                    case 4: // Cleric
-                        user.setDivision("Cleric");
-                        EnvyGamesCore.accountDao.update(user);
-                        break;
-                }
-                player.showFormWindow(new IntroductionGui());
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+            switch (id) {
+                case 0: // Warrior
+                    System.out.println("asds");
+                    break;
+                case 1: // Ranger
+                    break;
+                case 2: // Magic
+                    break;
+                case 3: // Rogue
+                    break;
+                case 4: // Cleric
+                    break;
             }
         }
     }

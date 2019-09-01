@@ -2,13 +2,13 @@ package dev.anullihate.envygamescore.listeners;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.*;
 import cn.nukkit.utils.TextFormat;
 import dev.anullihate.envygamescore.EnvyGamesCore;
 import dev.anullihate.envygamescore.datamanagers.UserManager;
-import dev.anullihate.envygamescore.datatables.User;
+import dev.anullihate.envygamescore.dataobjects.users.UserProfile;
+import dev.anullihate.envygamescore.datatables.UserTable;
 import dev.anullihate.envygamescore.guis.Gui;
 
 import java.sql.SQLException;
@@ -62,24 +62,18 @@ public class PlayerEventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         try {
-            User account = EnvyGamesCore.accountDao.queryForId(player.getName());
-            System.out.println(account);
+            UserTable user = EnvyGamesCore.userDao.queryForId(player.getName());
 
-            if (account == null) {
+            if (user == null) {
                 // create player
-                User newUser = new User();
 
                 // initial data
-                newUser.setName(player.getName());
-                newUser.setLevel(1);
-
-                EnvyGamesCore.accountDao.create(newUser);
-
-                account = EnvyGamesCore.accountDao.queryForId(player.getName());
-                UserManager.users.put(player.getName(), account);
+                UserProfile userProfileCreation = UserProfile.createNew(player.getName());
+                UserManager.users.put(player.getName(), userProfileCreation);
             } else {
                 // load player
-                UserManager.users.put(player.getName(), account);
+                UserProfile loadUserProfile = UserProfile.loadUserProfile(player.getName());
+                UserManager.users.put(player.getName(), loadUserProfile);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -89,6 +83,10 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+
+        UserProfile userProfile = UserManager.getUser(player.getName());
+        userProfile.saveUserProfile();
+
         UserManager.users.remove(player.getName());
     }
 }

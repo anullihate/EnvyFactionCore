@@ -1,6 +1,6 @@
 player-tag:
-  score-tag: "&e{division}&f | %player_health%&c❤ &7- &3%device_os%"
   name-tag: "&6&l%factions_faction% &r&e%player%"
+  score-tag: "&e{division}&f | %player_health%&c❤ &7- &3%device_os%"
 
 chat:
   format: "&l%envy_faction%&r &3[&l%luckperms_prefix%&r&3]&e%player% &3⋙&f %msg%"

@@ -7,10 +7,10 @@ import de.theamychan.scoreboard.network.Scoreboard;
 import de.theamychan.scoreboard.network.ScoreboardDisplay;
 import dev.anullihate.envygamescore.EnvyGamesCore;
 import dev.anullihate.envygamescore.datamanagers.UserManager;
-import dev.anullihate.envygamescore.datatables.User;
+import dev.anullihate.envygamescore.dataobjects.users.UserProfile;
+import dev.anullihate.envygamescore.datatables.UserTable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GeneralAPI {
@@ -88,7 +88,7 @@ public class GeneralAPI {
 
     public String getDivision(Player player) {
         try {
-            User user = UserManager.users.get(player.getName());
+            UserProfile user = UserManager.users.get(player.getName());
             String division = user.getDivision();
             if (division != null) {
                 return division;

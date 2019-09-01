@@ -11,7 +11,8 @@ import com.j256.ormlite.table.TableUtils;
 import com.massivecraft.factions.P;
 import dev.anullihate.envygamescore.apis.GeneralAPI;
 import dev.anullihate.envygamescore.commands.KitsCmd;
-import dev.anullihate.envygamescore.datatables.User;
+import dev.anullihate.envygamescore.datamanagers.UserManager;
+import dev.anullihate.envygamescore.datatables.UserTable;
 import dev.anullihate.envygamescore.listeners.BlockEventListener;
 import dev.anullihate.envygamescore.listeners.DataPacketEventListener;
 import dev.anullihate.envygamescore.listeners.PlayerEventListener;
@@ -30,7 +31,7 @@ public class EnvyGamesCore extends PluginBase {
     private static EnvyGamesCore core;
 
     public ConnectionSource connectionSource;
-    public static Dao<User, String> accountDao;
+    public static Dao<UserTable, String> userDao;
 
     public static Kits kits;
 
@@ -52,8 +53,8 @@ public class EnvyGamesCore extends PluginBase {
         if (connectionSource == null) return false;
 
         try {
-            accountDao = DaoManager.createDao(connectionSource, User.class);
-            TableUtils.createTableIfNotExists(connectionSource, User.class);
+            userDao = DaoManager.createDao(connectionSource, UserTable.class);
+            TableUtils.createTableIfNotExists(connectionSource, UserTable.class);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -86,13 +87,12 @@ public class EnvyGamesCore extends PluginBase {
         for (Kit kit : kits.getKits().values()) {
             kit.save();
         }
-        try {
-            connectionSource.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         try {
+
+            UserManager.saveAll();
+            UserManager.users.clear();
+
             connectionSource.close();
         } catch (IOException ex) {
             ex.printStackTrace();
