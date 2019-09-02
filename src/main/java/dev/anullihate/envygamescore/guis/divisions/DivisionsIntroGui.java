@@ -6,6 +6,7 @@ import cn.nukkit.form.element.ElementButton;
 import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
 import dev.anullihate.envygamescore.guis.Gui;
+import dev.anullihate.envygamescore.guis.races.RaceSelectionGui;
 
 public class DivisionsIntroGui extends FormWindowModal implements Gui {
 
@@ -20,6 +21,8 @@ public class DivisionsIntroGui extends FormWindowModal implements Gui {
         int id = getResponse().getClickedButtonId();
         if (id == 0) {
             player.showFormWindow(new DivisionsSelectionGui());
+        } else {
+            player.showFormWindow(new RaceSelectionGui());
         }
     }
 }

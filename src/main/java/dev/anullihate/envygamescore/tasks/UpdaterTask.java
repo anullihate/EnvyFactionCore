@@ -6,6 +6,7 @@ import cn.nukkit.scheduler.PluginTask;
 import cn.nukkit.utils.TextFormat;
 import de.theamychan.scoreboard.network.Scoreboard;
 import dev.anullihate.envygamescore.EnvyGamesCore;
+import dev.anullihate.envygamescore.datamanagers.UserManager;
 
 import java.util.List;
 
@@ -24,6 +25,9 @@ public class UpdaterTask extends PluginTask<EnvyGamesCore> {
         while (true) {
             if (this.seq < titles.size()) {
                 for (Player player : server.getOnlinePlayers().values()) {
+                    if (UserManager.getUser(player.getName()) == null) {
+                        break;
+                    }
                     String nameTagFormat = this.getOwner().getConfig().getString("player-tag.name-tag");
                     String scoreTagFormat = (this.getOwner().getConfig().getString("player-tag.score-tag")
                             .replace("%device_os%", EnvyGamesCore.generalAPI.getOS(player))

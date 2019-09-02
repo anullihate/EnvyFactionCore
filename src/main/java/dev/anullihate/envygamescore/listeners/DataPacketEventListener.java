@@ -30,7 +30,7 @@ public class DataPacketEventListener implements Listener {
                 @Override
                 public void run() {
                     UserProfile user = UserManager.users.get(player.getName());
-                    if (user.getRace() == null && user.getDivision() == null) {
+                    if (user.initial) {
                         player.showFormWindow(new IntroductionGui());
                     }
                 }

@@ -10,6 +10,7 @@ import dev.anullihate.envygamescore.datamanagers.UserManager;
 import dev.anullihate.envygamescore.dataobjects.users.UserProfile;
 import dev.anullihate.envygamescore.datatables.UserTable;
 import dev.anullihate.envygamescore.guis.Gui;
+import dev.anullihate.envygamescore.runnables.UserProfileLoadingRunnable;
 
 import java.sql.SQLException;
 
@@ -61,23 +62,7 @@ public class PlayerEventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        try {
-            UserTable user = EnvyGamesCore.userDao.queryForId(player.getName());
-
-            if (user == null) {
-                // create player
-
-                // initial data
-                UserProfile userProfileCreation = UserProfile.createNew(player.getName());
-                UserManager.users.put(player.getName(), userProfileCreation);
-            } else {
-                // load player
-                UserProfile loadUserProfile = UserProfile.loadUserProfile(player.getName());
-                UserManager.users.put(player.getName(), loadUserProfile);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        new UserProfileLoadingRunnable(player).runTaskAsynchronously(this.core);
     }
 
     @EventHandler
@@ -85,7 +70,9 @@ public class PlayerEventListener implements Listener {
         Player player = event.getPlayer();
 
         UserProfile userProfile = UserManager.getUser(player.getName());
-        userProfile.saveUserProfile();
+        if (userProfile.isLoaded()) {
+            userProfile.saveUserProfile();
+        }
 
         UserManager.users.remove(player.getName());
     }

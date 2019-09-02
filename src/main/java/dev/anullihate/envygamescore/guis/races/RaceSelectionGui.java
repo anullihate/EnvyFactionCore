@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
 import cn.nukkit.form.element.ElementButton;
 import cn.nukkit.form.window.FormWindowSimple;
+import dev.anullihate.envygamescore.datamanagers.UserManager;
+import dev.anullihate.envygamescore.dataobjects.users.UserProfile;
 import dev.anullihate.envygamescore.guis.Gui;
 import dev.anullihate.envygamescore.guis.divisions.DivisionsIntroGui;
 
@@ -26,16 +28,22 @@ public class RaceSelectionGui extends FormWindowSimple implements Gui {
             player.showFormWindow(new RaceSelectionGui());
         } else {
             int id = getResponse().getClickedButtonId();
+            UserProfile userProfile = UserManager.getUser(player.getName());
             switch (id) {
-                case 0:
+                case 0: // Human
+                    userProfile.setRace("human");
                     break;
-                case 1:
+                case 1: // Elf
+                    userProfile.setRace("elf");
                     break;
-                case 2:
+                case 2: // Orc
+                    userProfile.setRace("orc");
                     break;
-                case 3:
+                case 3: // Dwarf
+                    userProfile.setRace("dwarf");
                     break;
-                case 4:
+                case 4: // Undead
+                    userProfile.setRace("undead");
                     break;
             }
             player.showFormWindow(new DivisionsIntroGui());

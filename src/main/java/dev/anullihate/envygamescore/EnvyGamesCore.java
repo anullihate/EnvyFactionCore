@@ -23,6 +23,7 @@ import dev.anullihate.envygamescore.tasks.UpdaterTask;
 import dev.anullihate.envygamescore.tasks.KitsCooldownTask;
 import ru.nukkit.dblib.DbLib;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -62,6 +63,14 @@ public class EnvyGamesCore extends PluginBase {
         return true;
     }
 
+    private void loadQuests() {
+        Config humanQuest = new Config(new File(getDataFolder(), "quests/human.yml"));
+        Config elfQuest = new Config(new File(getDataFolder(), "quests/elf.yml"));
+        Config orcQuest = new Config(new File(getDataFolder(), "quests/orc.yml"));
+        Config dwarfQuest = new Config(new File(getDataFolder(), "quests/dwarf.yml"));
+        Config undeadQuest = new Config(new File(getDataFolder(), "quests/undead.yml"));
+    }
+
     public static EnvyGamesCore getInstance() {
         return core;
     }
@@ -73,6 +82,7 @@ public class EnvyGamesCore extends PluginBase {
 
         this.connectToDbLib();
 
+        this.loadQuests();
         this.loadAPIS();
 
         kits = new Kits(this);
@@ -91,7 +101,6 @@ public class EnvyGamesCore extends PluginBase {
         try {
 
             UserManager.saveAll();
-            UserManager.users.clear();
 
             connectionSource.close();
         } catch (IOException ex) {

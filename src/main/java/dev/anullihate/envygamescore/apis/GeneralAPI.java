@@ -32,7 +32,13 @@ public class GeneralAPI {
 
         for (String text : this.core.getConfig().getStringList("scoreboard.lines")) {
             String txt = text
-                    .replace("{division}", getDivision(player));
+                    .replace("{ping}", String.valueOf(player.getPing()))
+                    .replace("{division}", String.valueOf(UserManager.getUser(player.getName()).division))
+                    .replace("{divisionExp}", String.valueOf(UserManager.getUser(player.getName()).divisionExp))
+                    .replace("{divisionRank}", "Division Rank")
+                    .replace("{level}", String.valueOf(UserManager.getUser(player.getName()).level))
+                    .replace("{exp}", String.valueOf(UserManager.getUser(player.getName()).exp))
+                    .replace("{expTLU}", String.valueOf(UserManager.getUser(player.getName()).expTLU));
             scoreboardDisplay.addLine(EnvyGamesCore.placeholderAPI.translateString(txt, player), this.line++);
         }
 

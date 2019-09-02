@@ -7,9 +7,11 @@ import cn.nukkit.form.element.ElementButtonImageData;
 import cn.nukkit.form.window.FormWindowSimple;
 import dev.anullihate.envygamescore.EnvyGamesCore;
 import dev.anullihate.envygamescore.datamanagers.UserManager;
+import dev.anullihate.envygamescore.dataobjects.users.UserProfile;
 import dev.anullihate.envygamescore.datatables.UserTable;
 import dev.anullihate.envygamescore.guis.Gui;
 import dev.anullihate.envygamescore.guis.server.IntroductionGui;
+import dev.anullihate.envygamescore.guis.server.SetupCompleteGui;
 
 import java.sql.SQLException;
 
@@ -34,19 +36,27 @@ public class DivisionsSelectionGui extends FormWindowSimple implements Gui {
             player.showFormWindow(new DivisionsSelectionGui());
         } else {
             int id = getResponse().getClickedButtonId();
+            UserProfile userProfile = UserManager.getUser(player.getName());
             switch (id) {
                 case 0: // Warrior
-                    System.out.println("asds");
+                    userProfile.setDivision("warrior");
                     break;
                 case 1: // Ranger
+                    userProfile.setDivision("ranger");
                     break;
                 case 2: // Magic
+                    userProfile.setDivision("magic");
                     break;
                 case 3: // Rogue
+                    userProfile.setDivision("rogue");
                     break;
                 case 4: // Cleric
+                    userProfile.setDivision("cleric");
                     break;
             }
+            userProfile.isLoaded = true;
+            userProfile.saveUserProfile();
+            player.showFormWindow(new SetupCompleteGui());
         }
     }
 }

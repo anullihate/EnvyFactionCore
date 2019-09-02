@@ -13,9 +13,9 @@ public class UserTable {
     @DatabaseField(id = true)
     private String name;
     @DatabaseField
-    private int exp;
+    private double exp;
     @DatabaseField
-    private int expTLU;
+    private double expTLU;
 
     @DatabaseField
     private String race;
@@ -23,10 +23,15 @@ public class UserTable {
     @DatabaseField
     private String division;
     @DatabaseField
-    private int divisionExp;
+    private double divisionExp;
 
     @DatabaseField(dataType = DataType.SERIALIZABLE)
     private String[] professions;
+
+    @DatabaseField
+    private int kill;
+    @DatabaseField
+    private int death;
 
     public UserTable() {
 
@@ -38,11 +43,11 @@ public class UserTable {
         return name;
     }
 
-    public int getExp() {
+    public double getExp() {
         return exp;
     }
 
-    public int getExpTLU() {
+    public double getExpTLU() {
         return expTLU;
     }
 
@@ -54,7 +59,7 @@ public class UserTable {
         return division;
     }
 
-    public int getDivisionExp() {
+    public double getDivisionExp() {
         return divisionExp;
     }
 
@@ -68,11 +73,11 @@ public class UserTable {
         this.name = name;
     }
 
-    public void setExp(int exp) {
+    public void setExp(double exp) {
         this.exp = exp;
     }
 
-    public void setExpTLU(int expTLU) {
+    public void setExpTLU(double expTLU) {
         this.expTLU = expTLU;
     }
 
@@ -84,7 +89,7 @@ public class UserTable {
         this.division = division;
     }
 
-    public void setDivisionExp(int divisionExp) {
+    public void setDivisionExp(double divisionExp) {
         this.divisionExp = divisionExp;
     }
 

@@ -218,6 +218,7 @@ public class Kit {
     public void processCooldown() {
         this.playerCooldowns.getSections().forEach((player, time) -> {
             int remainingMinute = (int)time - 1;
+            System.out.println(time);
 
             this.playerCooldowns.set(player, remainingMinute);
             if (remainingMinute <= 0) {

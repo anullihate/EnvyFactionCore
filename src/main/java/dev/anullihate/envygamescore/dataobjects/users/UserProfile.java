@@ -8,34 +8,36 @@ import java.sql.SQLException;
 public class UserProfile {
 
     private double BASE_EXP = 100;
+    private double EXP_GROWTH = 1.5;
     private int MAX_LEVEL = 100;
+    private int DIVISION_MAX_LEVEL = 30;
 
-    private String playerName;
-    private int level;
-    private int exp;
-    private int expTLU;
-    private String race;
-    private String division;
-    private String divisionRank;
-    private int divisionExp;
+    public String playerName;
+    public double level;
+    public double exp;
+    public double expTLU;
+    public String race;
+    public String division;
+    public String divisionRank;
+    public double divisionExp;
 
-    private boolean isLoaded = false;
+    public boolean isLoaded = false;
+    public boolean initial = false;
 
     public UserProfile(
             String playerName,
-            int expTLU,
-            boolean isLoaded
+            double expTLU
     ) {
         this(playerName, 0, expTLU, null, null, 0);
     }
 
     public UserProfile(
             String playerName,
-            int exp,
-            int expTLU,
+            double exp,
+            double expTLU,
             String race,
             String division,
-            int divisionExp
+            double divisionExp
     ) {
         this.playerName = playerName;
         this.exp = exp;
@@ -44,28 +46,28 @@ public class UserProfile {
         this.division = division;
         this.divisionExp = divisionExp;
 
-        this.isLoaded = true;
+        this.level = checkPlayerLvl(exp);
     }
 
-    public static UserProfile createNew(String playerName) {
-        UserTable newUser = new UserTable();
-        newUser.setName(playerName);
-        newUser.setExpTLU(100);
+    private int checkPlayerLvl(double exp) {
+        int i = 0;
+        this.expTLU = BASE_EXP;
+        while (i < MAX_LEVEL) {
+            if (this.expTLU > exp) {
+                return i;
+            }
 
-        try {
-            EnvyGamesCore.userDao.create(newUser);
-            return new UserProfile(playerName, 100, true);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+            this.expTLU = expTLU * EXP_GROWTH;
+            i++;
         }
 
-        return new UserProfile(playerName, 100, false);
+        return MAX_LEVEL;
     }
 
     public static UserProfile loadUserProfile(String playerName) {
         try {
             UserTable userTable = EnvyGamesCore.userDao.queryForId(playerName);
-            return new UserProfile(
+            UserProfile userProfile = new UserProfile(
                     userTable.getName(),
                     userTable.getExp(),
                     userTable.getExpTLU(),
@@ -73,36 +75,52 @@ public class UserProfile {
                     userTable.getDivision(),
                     userTable.getDivisionExp()
             );
+            userProfile.isLoaded = true;
+            return userProfile;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        return new UserProfile(playerName, 100, false);
+        return new UserProfile(playerName, 100);
     }
 
     public void saveUserProfile() {
         try {
             UserTable userTable = EnvyGamesCore.userDao.queryForId(this.playerName);
 
-            if (userTable.getExp() != this.exp) {
+            if (userTable == null) {
+                userTable = new UserTable();
+                userTable.setName(this.playerName);
                 userTable.setExp(this.exp);
-            }
-            if (userTable.getExpTLU() != this.expTLU) {
                 userTable.setExpTLU(this.expTLU);
-            }
-            if (!userTable.getDivision().equals(this.division)) {
                 userTable.setDivision(this.division);
-            }
-            if (userTable.getDivisionExp() != this.divisionExp) {
                 userTable.setDivisionExp(this.divisionExp);
-            }
-            if (!userTable.getRace().equals(this.race)) {
                 userTable.setRace(this.race);
+            } else {
+                if (userTable.getExp() != this.exp) {
+                    userTable.setExp(this.exp);
+                }
+                if (userTable.getExpTLU() != this.expTLU) {
+                    userTable.setExpTLU(this.expTLU);
+                }
+                if (!userTable.getDivision().equals(this.division)) {
+                    userTable.setDivision(this.division);
+                }
+                if (userTable.getDivisionExp() != this.divisionExp) {
+                    userTable.setDivisionExp(this.divisionExp);
+                }
+                if (!userTable.getRace().equals(this.race)) {
+                    userTable.setRace(this.race);
+                }
             }
             EnvyGamesCore.userDao.createOrUpdate(userTable);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
     }
 
     public String getDivision() {
@@ -111,5 +129,13 @@ public class UserProfile {
 
     public String getRace() {
         return race;
+    }
+
+    public void setRace(String race) {
+        this.race = race;
+    }
+
+    public void setDivision(String division) {
+        this.division = division;
     }
 }
