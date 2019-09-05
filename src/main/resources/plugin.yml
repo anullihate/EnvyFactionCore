@@ -1,5 +1,5 @@
-name: EnvyGamesCore
-main: dev.anullihate.envygamescore.EnvyGamesCore
+name: EnvyFactionCore
+main: dev.anullihate.envyfactioncore.EnvyFactionCore
 version: ${pom.version}
 api: ["1.0.0"]
 author: anullihate
