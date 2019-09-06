@@ -60,18 +60,18 @@ public class PlayerEventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         player.setMovementSpeed(0.1f);
-        new UserProfileLoadingRunnable(player).runTaskAsynchronously(this.core);
+//        new UserProfileLoadingRunnable(player).runTaskAsynchronously(this.core);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        UserProfile userProfile = UserManager.getUser(player.getName());
-        if (userProfile.isLoaded()) {
-            userProfile.saveUserProfile();
-        }
-
-        UserManager.users.remove(player.getName());
+//        UserProfile userProfile = UserManager.getUser(player.getName());
+//        if (userProfile.isLoaded()) {
+//            userProfile.saveUserProfile();
+//        }
+//
+//        UserManager.users.remove(player.getName());
     }
 }

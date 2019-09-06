@@ -26,10 +26,10 @@ public class DataPacketEventListener implements Listener {
             (new NukkitRunnable() {
                 @Override
                 public void run() {
-                    UserProfile user = UserManager.users.get(player.getName());
-                    if (user.initial) {
-                        player.showFormWindow(new IntroductionGui());
-                    }
+//                    UserProfile user = UserManager.users.get(player.getName());
+//                    if (user.initial) {
+//                        player.showFormWindow(new IntroductionGui());
+//                    }
                 }
             }).runTaskLater(this.core, 40);
         }
